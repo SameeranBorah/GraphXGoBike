@@ -33,8 +33,8 @@ object GraphXGoBike {
       .select("station_id", "start_station_name")
       .rdd
       .map(row => (row(0).asInstanceOf[Number].longValue, row(1).asInstanceOf[String])) // maintain type information
-
-    stationVertices.take(1)
+    stationVertices.collect().foreach(println)
+    stationVertices.take(1)// this is just a stationVertex at this point
     val stationEdges:RDD[Edge[Long]] = df
       .select("start_station_id", "end_station_id")
       .rdd
@@ -82,7 +82,7 @@ object GraphXGoBike {
       .take(5)
       .foreach(x => println(x._2 + " has a in/out degree ratio of " + x._1))
     stationGraph
-      .inDegrees
+      .outDegrees
       .join(stationGraph.inDegrees) // join with out Degrees
       .join(stationVertices) // join with your other stations
       .map(x => (x._2._1._1.toDouble/x._2._1._2.toDouble, x._2._2)) // ratio of in to out
